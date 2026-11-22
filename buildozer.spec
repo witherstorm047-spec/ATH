@@ -1,35 +1,52 @@
-name: Compilar APK Android
+[app]
 
-on:
-  push:
-    branches: [ main, master ]
-  workflow_dispatch:
+# Nome da aplicação no telemóvel
+title = ATHENA NEXUS
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+# Nome do pacote
+package.name = athenanexus
 
-    steps:
-      - name: Descarregar código
-        uses: actions/checkout@v4
+# Domínio do pacote
+package.domain = org.athena
 
-      - name: Configurar Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.10'
+# Pasta onde está o main.py
+source.dir = .
 
-      - name: Instalar dependências do sistema e Buildozer
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libtinfo5 cmake libffi-dev libssl-dev
-          pip3 install --upgrade buildozer cython==0.29.33
+# Ficheiros incluídos no APK
+source.include_exts = py,png,jpg,kv,atlas,npz,txt,md
 
-      - name: Gerar APK com Buildozer
-        run: |
-          buildozer -v android debug
+# Versão da aplicação
+version = 1.0.0
 
-      - name: Guardar o APK gerado
-        uses: actions/upload-artifact@v4
-        with:
-          name: meu-aplicativo-apk
-          path: bin/*.apk
+# Dependências Python compiladas pelo python-for-android
+# Nota: usamos pygame-ce (compatível com SDL2/Android) e numpy
+requirements = python3,pygame-ce,numpy,pyjnius
+
+# Orientação horizontal (landscape) ideal para o tabuleiro e mesa de bilhar
+orientation = landscape
+
+# Ecrã inteiro
+fullscreen = 1
+
+# Permissões Android (INTERNET opcional caso queiras ligar a um servidor Ollama externo)
+android.permissions = INTERNET,VIBRATE
+
+# Arquiteturas Android modernas (64-bit e 32-bit ARM)
+android.archs = arm64-v8a, armeabi-v7a
+
+# Níveis de API Android
+android.api = 34
+android.minapi = 24
+android.ndk = 25b
+android.accept_sdk_license = True
+
+# Bootstrap SDL2 para aplicações Pygame
+p4a.bootstrap = sdl2
+
+[buildozer]
+
+# Nível de detalhe do log (2 = detalhado para diagnóstico)
+log_level = 2
+
+# Mostrar aviso ao correr como root no GitHub Actions
+warn_on_root = 0
